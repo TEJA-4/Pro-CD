@@ -1,0 +1,77 @@
+# EC2 Instance Automation using AWS Lambda and CloudWatch
+
+## Description
+This project automates the starting and stopping of EC2 instances using AWS Lambda, CloudWatch, and related AWS services. The goal is to schedule the start/stop of EC2 instances to reduce costs during idle hours.
+
+## Services Used
+- **EC2**: For creating instances.
+- **IAM**: For managing permissions.
+- **Lambda**: For automating the start/stop of instances.
+- **Amazon EventBridge**: To scheduling Events(Rules) for Lambda function.
+- **SNS**: For email notifications when instances are started or stopped.
+- **CloudWatch**: For Viewing Logs
+
+## Setup
+
+### 1. EC2 Instances Setup
+Create 6 EC2 instances in your AWS environment. Ensure the instances are configured with the necessary specifications for your testing environment.
+
+### 2. IAM Role
+Create IAM role and assign policy permissions are AmazonEC2FullAccess, AmazonEventBridgeFullAccess, AmazonSNSFullAccess, CloudWatchFullAccess to Ensure our configuration
+
+### 3. Lambda Function Setup
+Create Lambda Function that starts And stops EC2 instances.
+
+Code for starting instances:
+```python
+import boto3
+import os
+
+ec2 = boto3.client('ec2')
+sns = boto3.client('sns')
+
+def lambda_handler(event, context):
+    # List of EC2 Instance IDs
+    instance_ids = ['put instance_ids']  
+    
+    # Start EC2 instances
+    ec2.start_instances(InstanceIds=instance_ids)
+    
+    # Send notification via SNS
+    sns.publish(
+        TopicArn=os.environ['SNS_TOPIC_ARN'], 
+        Message=f"EC2 Instances {'put instance_ids'} have been started."
+    )
+    
+    return {"message": "EC2 instances started successfully"}
+---
+Code for stopping instances:
+```python
+import boto3
+import os
+
+ec2 = boto3.client('ec2')
+sns = boto3.client('sns')
+
+def lambda_handler(event, context):
+    # List of EC2 Instance IDs
+    instance_ids = ['put instance_ids'] 
+    
+    # Stop EC2 instances
+    ec2.stop_instances(InstanceIds=instance_ids)
+    
+    # Send notification via SNS
+    sns.publish(
+        TopicArn=os.environ['SNS_TOPIC_ARN'],  
+        Message=f"EC2 Instances {'put instance_ids'} have been stopped."
+    )
+    
+    return {"message": "EC2 instances stopped successfully"}
+
+### 4. Amazon EventBridge Rules Setup
+Create rules to trigger Lambda functions at scheduled times(e.g.9 AM for starting instances, 6 PM for stopping instances).
+Example cron expression for 9 AM IST (3:30 AM UTC): cron(30 3 * * ? *)
+Example cron expression for 6 PM IST (12:30 PM UTC): cron(30 12 * * ? *)
+
+### 5. SNS for Email Notifications
+Create an SNS Topic for instance status notifications.
