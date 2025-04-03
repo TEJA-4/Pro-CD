@@ -1,4 +1,4 @@
-# 🚀 EC2 Instance Automation using AWS Lambda and CloudWatch
+# 🚀 EC2 Power Manager: Automating Start & Stop with AWS
 
 ## 📌 Overview
 This project automates the starting and stopping of EC2 instances using AWS Lambda, CloudWatch, and related AWS services. The goal is to optimize cost efficiency by scheduling EC2 instances to run only when needed.
